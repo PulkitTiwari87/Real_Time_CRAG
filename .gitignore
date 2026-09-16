@@ -1,33 +1,13 @@
-# Python
+.env
+.venv/
+venv/
 __pycache__/
 *.py[cod]
-*.pyo
-
-# Virtual environment
-venv/
-.venv/
-env/
-
-# Environment variables
-.env
-
-# IDE
-.vscode/
+logs/
+*.sqlite3
+*.db
+local_vector_store/
+*.ipynb_checkpoints/
 .idea/
-
-# OS
+.vscode/
 .DS_Store
-Thumbs.db
-
-# Jupyter
-.ipynb_checkpoints/
-
-# Logs
-*.log
-
-# Local databases / vector stores
-chroma/
-qdrant_storage/
-
-# Data generated locally
-data/processed/
