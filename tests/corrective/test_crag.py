@@ -1,7 +1,6 @@
 import pytest
 
 from corrective.crag import run_crag
-from corrective.rewriter import RewriteError
 from retrieval.retriever import RetrievalResult
 
 

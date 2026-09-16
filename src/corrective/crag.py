@@ -11,7 +11,7 @@ import time
 from dataclasses import dataclass
 from typing import Protocol
 
-from generation.pipeline import GenerationError, GroundedAnswer, generate_grounded_answer
+from generation.pipeline import GroundedAnswer, generate_grounded_answer
 from retrieval.grader import Grade, grade_results
 from retrieval.retriever import RetrievalResult
 

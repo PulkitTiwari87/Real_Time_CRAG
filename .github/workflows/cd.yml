@@ -1,0 +1,99 @@
+name: CD
+
+# Triggered by the CI workflow completing, rather than directly on push, so
+# a production image is only ever built from a commit on main that already
+# passed lint/tests/docker-validate/security. This also keeps GHCR
+# credentials out of reach of pull_request-triggered runs (including from
+# forks), since only CI's own push-to-main runs can trigger this workflow.
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-push:
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.image.outputs.name }}
+      sha: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # GHCR requires a lowercase image path; github.repository preserves
+      # the repo's actual casing (PulkitTiwari87/Real_Time_CRAG).
+      - name: Compute lowercase image name
+        id: image
+        run: echo "name=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ steps.image.outputs.name }}:${{ github.event.workflow_run.head_sha }}
+            ${{ steps.image.outputs.name }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  smoke-test:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run the published image and check /health
+        run: |
+          set -e
+          docker run -d --name smoke -p 8000:8000 \
+            "${{ needs.build-and-push.outputs.image }}:${{ needs.build-and-push.outputs.sha }}"
+
+          ok=""
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:8000/health; then
+              ok=1
+              break
+            fi
+            sleep 3
+          done
+
+          if [ -z "$ok" ]; then
+            echo "Health check never returned 200"
+            docker logs smoke
+            exit 1
+          fi
+
+      - name: Show container logs
+        if: always()
+        run: docker logs smoke || true
+
+      - name: Clean up
+        if: always()
+        run: docker rm -f smoke || true

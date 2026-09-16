@@ -6,7 +6,6 @@
 #
 # Then point LLM_PROVIDER-style config at KAFKA_BOOTSTRAP_SERVERS=localhost:9092
 # (see .env.example) and run scripts/run_streaming_ingestion.py.
-version: "3.8"
 services:
   kafka:
     image: bitnami/kafka:3.7
