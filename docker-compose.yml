@@ -1,0 +1,24 @@
+# Phase 15: local production-shaped deployment. Not verified in this
+# sandbox (no Docker available here). Verify locally with:
+#   docker compose up --build
+# Requires a .env file (see .env.example) with at least GEMINI_API_KEY or
+# a reachable Ollama instance, per src/rag_baseline/llm_providers/.
+version: "3.8"
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - vector_store_data:/app/local_vector_store
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  vector_store_data:

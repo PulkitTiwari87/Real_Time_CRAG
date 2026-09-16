@@ -2,3 +2,13 @@
 sentence-transformers==6.0.1
 qdrant-client==1.19.0
 requests==2.31.0
+pypdf==6.19.0
+rank-bm25==0.2.2
+PyYAML==6.0.3
+langgraph==1.2.11
+feedparser==6.0.14
+kafka-python==3.0.11
+fastapi==0.141.1
+uvicorn==0.24.0
+pydantic==2.13.5
+prometheus_client==0.26.0

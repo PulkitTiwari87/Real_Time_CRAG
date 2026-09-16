@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Real-Time Corrective RAG</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: system-ui, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
+  h1 { font-size: 1.4rem; }
+  section { margin-bottom: 2rem; padding: 1rem; border: 1px solid #8884; border-radius: 8px; }
+  textarea, input[type=text] { width: 100%; box-sizing: border-box; padding: 0.5rem; font-family: inherit; }
+  textarea { height: 6rem; }
+  button { padding: 0.5rem 1rem; margin-top: 0.5rem; cursor: pointer; }
+  .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.8rem; margin-right: 0.4rem; }
+  .badge-ok { background: #2a7; color: white; }
+  .badge-warn { background: #d80; color: white; }
+  .badge-info { background: #57a; color: white; }
+  .citations { font-size: 0.9rem; color: #666; }
+  .error { color: #c33; }
+  #answer { white-space: pre-wrap; }
+  .status-line { margin: 0.5rem 0; }
+</style>
+</head>
+<body>
+  <h1>Real-Time Corrective RAG</h1>
+  <p>Simplest useful interface: index some text, then ask a question. Shows the answer, its sources, and whether correction (query rewriting) or fallback (abstention) kicked in.</p>
+
+  <section>
+    <h2>1. Ingest a document</h2>
+    <input type="text" id="doc-id" placeholder="Document ID (e.g. doc1)">
+    <textarea id="doc-content" placeholder="Paste document text here..."></textarea>
+    <button id="ingest-btn">Ingest</button>
+    <div id="ingest-status" class="status-line"></div>
+  </section>
+
+  <section>
+    <h2>2. Ask a question</h2>
+    <input type="text" id="query-input" placeholder="What would you like to know?">
+    <button id="query-btn">Ask</button>
+    <div id="query-status" class="status-line"></div>
+
+    <div id="result" hidden>
+      <h3>Answer</h3>
+      <p id="answer"></p>
+      <div id="badges"></div>
+      <h3>Sources</h3>
+      <ul id="citations" class="citations"></ul>
+    </div>
+  </section>
+
+<script>
+const API_BASE = window.location.origin;
+
+async function ingest() {
+  const documentId = document.getElementById('doc-id').value.trim();
+  const content = document.getElementById('doc-content').value.trim();
+  const status = document.getElementById('ingest-status');
+  status.textContent = '';
+  status.className = 'status-line';
+
+  if (!documentId || !content) {
+    status.textContent = 'Document ID and content are both required.';
+    status.className = 'status-line error';
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/ingest`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ document_id: documentId, content }),
+    });
+    const body = await res.json();
+    if (!res.ok) {
+      status.textContent = `Error: ${body.detail || res.statusText}`;
+      status.className = 'status-line error';
+      return;
+    }
+    status.textContent = `Indexed ${body.chunks_indexed} chunk(s).`;
+  } catch (err) {
+    status.textContent = `Request failed: ${err}`;
+    status.className = 'status-line error';
+  }
+}
+
+async function askQuestion() {
+  const query = document.getElementById('query-input').value.trim();
+  const status = document.getElementById('query-status');
+  const resultBox = document.getElementById('result');
+  status.textContent = '';
+  status.className = 'status-line';
+  resultBox.hidden = true;
+
+  if (!query) {
+    status.textContent = 'Please enter a question.';
+    status.className = 'status-line error';
+    return;
+  }
+
+  status.textContent = 'Thinking...';
+
+  try {
+    const res = await fetch(`${API_BASE}/query`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query }),
+    });
+    const body = await res.json();
+    if (!res.ok) {
+      status.textContent = `Error: ${body.detail || res.statusText}`;
+      status.className = 'status-line error';
+      return;
+    }
+    status.textContent = '';
+
+    document.getElementById('answer').textContent = body.answer;
+
+    const badges = document.getElementById('badges');
+    badges.innerHTML = '';
+    if (body.abstained) {
+      badges.innerHTML += '<span class="badge badge-warn">Abstained: insufficient evidence</span>';
+    } else {
+      badges.innerHTML += '<span class="badge badge-ok">Grounded answer</span>';
+    }
+    if (body.rewrite_count > 0) {
+      badges.innerHTML += `<span class="badge badge-info">Query rewritten ${body.rewrite_count}x (correction applied)</span>`;
+    }
+    badges.innerHTML += `<span class="badge badge-info">${body.latency_ms.toFixed(0)} ms</span>`;
+
+    const citationsList = document.getElementById('citations');
+    citationsList.innerHTML = '';
+    if (body.citations.length === 0) {
+      citationsList.innerHTML = '<li>(none)</li>';
+    } else {
+      for (const c of body.citations) {
+        const li = document.createElement('li');
+        li.textContent = `[${c.index}] ${c.source}`;
+        citationsList.appendChild(li);
+      }
+    }
+
+    resultBox.hidden = false;
+  } catch (err) {
+    status.textContent = `Request failed: ${err}`;
+    status.className = 'status-line error';
+  }
+}
+
+document.getElementById('ingest-btn').addEventListener('click', ingest);
+document.getElementById('query-btn').addEventListener('click', askQuestion);
+document.getElementById('query-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') askQuestion();
+});
+</script>
+</body>
+</html>

@@ -15,7 +15,7 @@ import requests
 
 from .base import LLMConfigError, LLMProviderError
 
-DEFAULT_MODEL = "gemini-2.0-flash"
+DEFAULT_MODEL = "gemini-3.6-flash"
 API_URL_TEMPLATE = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
 

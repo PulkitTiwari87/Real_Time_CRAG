@@ -1,0 +1,7 @@
+retrieval:
+  top_k: 5
+  use_bm25_fallback: true
+
+grader:
+  confidence_threshold: 0.35
+  similarity_weight: 0.7

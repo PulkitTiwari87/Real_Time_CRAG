@@ -1,0 +1,4 @@
+evaluation:
+  top_k: 3
+  dataset_path: docs/evaluation/benchmark_dataset.json
+  report_path: docs/evaluation/phase06-baseline-report.md

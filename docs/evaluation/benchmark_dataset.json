@@ -1,0 +1,60 @@
+{
+  "documents": [
+    {
+      "id": "doc0",
+      "content": "The Eiffel Tower is located in Paris, France and was completed in 1889."
+    },
+    {
+      "id": "doc1",
+      "content": "Photosynthesis is the process by which plants convert sunlight into chemical energy."
+    },
+    {
+      "id": "doc2",
+      "content": "The Great Barrier Reef is the world's largest coral reef system, located off Australia."
+    },
+    {
+      "id": "doc3",
+      "content": "Python is a high-level programming language known for its readable syntax."
+    },
+    {
+      "id": "doc4",
+      "content": "The mitochondria is the powerhouse of the cell, producing ATP through respiration."
+    },
+    {
+      "id": "doc5",
+      "content": "Qdrant is an open-source vector database used for similarity search."
+    }
+  ],
+  "queries": [
+    {
+      "query": "Where is the Eiffel Tower located?",
+      "relevant_doc_ids": ["doc0"],
+      "reference_answer": "The Eiffel Tower is located in Paris, France."
+    },
+    {
+      "query": "How do plants convert sunlight into energy?",
+      "relevant_doc_ids": ["doc1"],
+      "reference_answer": "Plants convert sunlight into chemical energy through photosynthesis."
+    },
+    {
+      "query": "What is the largest coral reef system?",
+      "relevant_doc_ids": ["doc2"],
+      "reference_answer": "The Great Barrier Reef is the world's largest coral reef system."
+    },
+    {
+      "query": "Which programming language is known for readable syntax?",
+      "relevant_doc_ids": ["doc3"],
+      "reference_answer": "Python is known for its readable syntax."
+    },
+    {
+      "query": "What organelle produces ATP in a cell?",
+      "relevant_doc_ids": ["doc4"],
+      "reference_answer": "The mitochondria produces ATP through respiration."
+    },
+    {
+      "query": "What is a vector database used for similarity search?",
+      "relevant_doc_ids": ["doc5"],
+      "reference_answer": "Qdrant is an open-source vector database used for similarity search."
+    }
+  ]
+}

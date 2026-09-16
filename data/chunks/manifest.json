@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-09-16T12:09:28.544030+00:00",
+  "chunk_size": 30,
+  "overlap": 5,
+  "chunk_count": 4,
+  "chunks": [
+    {
+      "chunk_id": "sample::0",
+      "document_id": "sample",
+      "source": "C:\\Users\\tpulk\\AppData\\Local\\Temp\\claude\\D--Claude-Code-Real-Time-CRAG\\15ab36f8-69ab-46b0-8d6b-d07033de244a\\scratchpad\\sample.txt",
+      "content": "the real - time corrective rag intelligence platform is a fault - tolerant, production - oriented retrieval - augmented generation system. it ingests documents,",
+      "token_count": 30
+    },
+    {
+      "chunk_id": "sample::1",
+      "document_id": "sample",
+      "source": "C:\\Users\\tpulk\\AppData\\Local\\Temp\\claude\\D--Claude-Code-Real-Time-CRAG\\15ab36f8-69ab-46b0-8d6b-d07033de244a\\scratchpad\\sample.txt",
+      "content": "ingests documents, chunks them, embeds the chunks locally, and stores the vectors in qdrant. when a user asks a question",
+      "token_count": 30
+    },
+    {
+      "chunk_id": "sample::2",
+      "document_id": "sample",
+      "source": "C:\\Users\\tpulk\\AppData\\Local\\Temp\\claude\\D--Claude-Code-Real-Time-CRAG\\15ab36f8-69ab-46b0-8d6b-d07033de244a\\scratchpad\\sample.txt",
+      "content": "a user asks a question, the system retrieves the most relevant chunks and asks a local language model to answer using only that retrieved context, citing its",
+      "token_count": 30
+    },
+    {
+      "chunk_id": "sample::3",
+      "document_id": "sample",
+      "source": "C:\\Users\\tpulk\\AppData\\Local\\Temp\\claude\\D--Claude-Code-Real-Time-CRAG\\15ab36f8-69ab-46b0-8d6b-d07033de244a\\scratchpad\\sample.txt",
+      "content": "retrieved context, citing its sources.",
+      "token_count": 7
+    }
+  ]
+}
